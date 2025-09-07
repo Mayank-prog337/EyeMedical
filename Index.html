@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurobindo Netralaya - Premier Eye Care Hospital</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        /* ---------- Theme / Reset ---------- */
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --primary:#2e7d32;          /* deep green */
+            --primary-600:#2e7d32;
+            --primary-500:#43a047;
+            --primary-300:#7cb342;
+            --accent:#e8f5e9;           /* very light green / white */
+            --muted:#6b6b6b;
+            --glass:rgba(255,255,255,.85);
+            --glass-border:rgba(255,255,255,.6);
+            --shadow:rgba(0,0,0,.08);
+            --text:#12321b;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.18);
+        }
+        html,body{height:100%}
+        body{
+            font-family:'Inter',system-ui,Arial,sans-serif;
+            color:var(--text);min-height:100vh;overflow-x:hidden;
+            -webkit-font-smoothing:antialiased;
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        }
+        h1,h2,h3,h4{
+            font-family:'Poppins', 'Segoe UI', sans-serif;
+            color:var(--primary-600);
+            transition: all 0.3s ease;
+        }
+        h1:hover, h2:hover, h3:hover, h4:hover {
+            text-shadow: 0 0 10px rgba(67, 160, 71, 0.4);
+        }
+
+        a{color:inherit}
+
+        /* ---------- Loading ---------- */
+        #loading-screen{
+            position:fixed;inset:0;background:linear-gradient(180deg,var(--primary-600),var(--primary-500));
+            display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;
+            transition:opacity .45s ease-out
+        }
+        .loader{width:80px;height:80px;position:relative}
+        .loader:before{
+            content:"";width:80px;height:80px;border-radius:50%;
+            border:6px solid rgba(255,255,255,.18);border-top-color:rgba(255,255,255,.95);
+            animation:spin 1.5s linear infinite;position:absolute;inset:0
+        }
+        .eye-icon{font-size:36px;color:#fff;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+        .loading-text{color:#fff;margin-top:18px;font-size:15px;letter-spacing:1px}
+
+        /* ---------- Background (Three.js container) ---------- */
+        #three-container{
+            position:fixed;
+            inset:0;
+            z-index:-1;
+            pointer-events:none;
+            background: linear-gradient(160deg, #e8f5e9 0%, #f3fff6 50%, #e8f5e9 100%);
+        }
+        
+        /* Hero section */
+        .hero {
+            padding:120px 5% 80px;
+            text-align:center;
+            position:relative;
+            overflow:hidden;
+        }
+        .hero-content{
+            max-width:960px;
+            margin:0 auto;
+            position:relative;
+            z-index:2;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .hero h2{
+            font-size:3rem;
+            margin-bottom:14px;
+            color:var(--primary-600);
+            line-height:1.05;
+        }
+        .hero p{
+            font-size:1.05rem;
+            margin-bottom:20px;
+            color:#3b3b3b;
+            line-height:1.6;
+        }
+
+        /* ---------- Header ---------- */
+        header{
+            background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.88));
+            backdrop-filter:blur(8px);
+            padding:14px 5%;
+            position:fixed;
+            width:100%;
+            z-index:100;
+            border-bottom:1px solid rgba(0,0,0,.04);
+            box-shadow:0 6px 20px var(--shadow)
+        }
+        .header-container{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+        }
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .logo i{
+            font-size:26px;
+            color:var(--primary-600);
+        }
+        .logo h1{
+            font-size:20px;
+            font-weight:700;
+            color:var(--primary-600);
+        }
+
+        nav ul{
+            display:flex;
+            list-style:none;
+            gap:26px;
+            align-items:center;
+        }
+        nav ul li a{
+            font-weight:600;
+            padding:8px 6px;
+            border-radius:8px;
+            color:var(--muted);
+            text-decoration:none;
+            transition:all .18s ease;
+        }
+        nav ul li a:hover{
+            color:var(--primary-600);
+            background:linear-gradient(90deg, rgba(67,160,71,.09), rgba(46,125,50,.06));
+        }
+
+        .hamburger{
+            display:none;
+            cursor:pointer;
+            background:none;
+            border:none;
+            font-size:20px;
+            color:var(--primary-600);
+        }
+
+        /* ---------- Mobile Menu (slide panel + overlay) ---------- */
+        .mobile-overlay{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.35);
+            opacity:0;
+            pointer-events:none;
+            transition:opacity .25s ease;
+            z-index:190;
+        }
+        .mobile-overlay.active{
+            opacity:1;
+            pointer-events:auto;
+        }
+        .mobile-menu{
+            position:fixed;
+            top:0;
+            right:-100%;
+            width:320px;
+            max-width:80%;
+            height:100vh;
+            background:linear-gradient(180deg,#fff,#f7fff7);
+            z-index:200;
+            padding:72px 22px 24px;
+            transition:right .28s ease;
+            box-shadow:-12px 0 40px rgba(0,0,0,.08);
+            overflow:auto;
+        }
+        .mobile-menu.active{
+            right:0;
+        }
+        .mobile-menu ul{
+            list-style:none;
+            padding:6px;
+        }
+        .mobile-menu ul li{
+            margin-bottom:14px;
+        }
+        .mobile-menu ul li a{
+            display:block;
+            padding:12px;
+            border-radius:10px;
+            color:var(--text);
+            text-decoration:none;
+            font-weight:600;
+        }
+        .mobile-menu .close-menu{
+            position:absolute;
+            top:12px;
+            right:12px;
+            background:none;
+            border:0;
+            font-size:22px;
+            color:var(--primary-600);
+            cursor:pointer;
+        }
+
+        /* ---------- Cards ---------- */
+        .card{
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-300));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* ---------- Buttons ---------- */
+        .btn{
+            padding:12px 26px;
+            border-radius:999px;
+            border:none;
+            font-weight:700;
+            cursor:pointer;
+            transition: all 0.3s ease;
+            outline:none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-primary{
+            background:linear-gradient(90deg,var(--primary-500),var(--primary-300));
+            color:#fff;
+            box-shadow:0 8px 20px rgba(67,160,71,.12);
+        }
+        .btn-primary:hover{
+            transform:translateY(-3px);
+            box-shadow:0 0 20px rgba(67, 160, 71, 0.6);
+        }
+        .btn:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 15px rgba(67, 160, 71, 0.5);
+        }
+
+        /* ---------- Form Styling ---------- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-600);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2);
+            outline: none;
+            background: white;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* ---------- Sections ---------- */
+        .section{
+            padding:72px 5%;
+        }
+        .section-title{
+            text-align:center;
+            margin-bottom:36px;
+        }
+        .section-title h2{
+            font-size:28px;
+            margin-bottom:8px;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-300));
+            border-radius: 3px;
+        }
+        .section-title p{
+            color:var(--muted);
+            max-width:760px;
+            margin:0 auto;
+        }
+
+        .cards-container{
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .department-card{
+            text-align:left;
+            padding:20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .department-card i{
+            font-size:28px;
+            color:var(--primary-600);
+            margin-bottom:14px;
+            width:56px;
+            height:56px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:12px;
+            background:linear-gradient(180deg, rgba(67,160,71,.08), rgba(46,125,50,.04));
+            transition: all 0.3s ease;
+        }
+        .department-card:hover i {
+            background: linear-gradient(180deg, rgba(67,160,71,.15), rgba(46,125,50,.1));
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(67, 160, 71, 0.3);
+        }
+        .department-card h3{
+            margin-bottom:6px;
+            transition: all 0.3s ease;
+        }
+        .department-card:hover h3 {
+            color: var(--primary-500);
+        }
+        .department-card p{
+            color:var(--muted);
+            line-height:1.55;
+        }
+
+        /* Tech grid */
+        .tech-grid{
+            display:grid;
+            grid-template-columns:repeat(2, 1fr);
+            gap:18px;
+            margin-top:18px;
+        }
+        @media (max-width: 768px) {
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .tech-item{
+            display:flex;
+            align-items:flex-start;
+            background:linear-gradient(180deg,#fff,#fbfffb);
+            padding:16px;
+            border-radius:12px;
+            box-shadow:0 8px 20px var(--shadow);
+            transition: all 0.3s ease;
+        }
+        .tech-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .tech-item i{
+            font-size:20px;
+            color:var(--primary-600);
+            margin-right:14px;
+            width:44px;
+            height:44px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:10px;
+            background:rgba(67,160,71,.06);
+            transition: all 0.3s ease;
+        }
+        .tech-item:hover i {
+            background: rgba(67,160,71,.12);
+            box-shadow: 0 0 12px rgba(67, 160, 71, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Testimonials */
+        .testimonial-card{
+            padding:22px;
+        }
+        .testimonial-text{
+            font-style:italic;
+            margin-bottom:14px;
+            line-height:1.6;
+            color:#444;
+            position:relative;
+            padding-left:28px;
+        }
+        .testimonial-text:before{
+            content:"“";
+            font-size:44px;
+            color:var(--primary-300);
+            position:absolute;
+            left:0;
+            top:-6px;
+        }
+        .testimonial-author{
+            display:flex;
+            align-items:center;
+        }
+        .testimonial-author .avatar{
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            background:var(--primary-500);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin-right:12px;
+            color:#fff;
+            font-weight:700;
+        }
+
+        /* Contact */
+        .contact-section{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:28px;
+            align-items:stretch;
+        }
+        @media (max-width: 768px) {
+            .contact-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        .contact-section .card{
+            height:100%;
+        }
+        .map-container{
+            border-radius:12px;
+            overflow:hidden;
+            height:100%;
+            min-height:420px;
+        }
+        .map-container iframe{
+            width:100%;
+            height:100%;
+            border:0;
+        }
+
+        /* Footer */
+        footer{
+            background:linear-gradient(180deg,var(--primary-600),var(--primary-500));
+            color:#fff;
+            padding:44px 5% 28px;
+        }
+        .footer-content{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:26px;
+            margin-bottom:18px;
+        }
+        .footer-column h3{
+            font-size:18px;
+            margin-bottom:12px;
+            color:rgba(255,255,255,.95);
+        }
+        .footer-column p{
+            color:rgba(255,255,255,.95);
+        }
+        .footer-column ul{
+            list-style:none;
+            padding:0;
+        }
+        .footer-column ul li{
+            margin-bottom:12px;
+        }
+        .footer-column ul li a{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            padding:8px 10px;
+            border-radius:8px;
+            color:rgba(255,255,255,.92);
+            text-decoration:none;
+            font-weight:600;
+        }
+        .footer-column ul li a i{
+            color:rgba(255,255,255,.8);
+            width:18px;
+            text-align:center;
+        }
+        .footer-column ul li a:hover{
+            background:rgba(255,255,255,.06);
+            transform:translateX(6px);
+        }
+        .social-links{
+            display:flex;
+            gap:12px;
+            margin-top:10px;
+        }
+        .social-links a{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            width:40px;
+            height:40px;
+            border-radius:50%;
+            background:rgba(255,255,255,.12);
+            color:#fff;
+            transition: all 0.3s ease;
+        }
+        .social-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+        .copyright{
+            text-align:center;
+            padding-top:16px;
+            border-top:1px solid rgba(255,255,255,.08);
+            color:rgba(255,255,255,.85);
+            font-size:.9rem;
+        }
+
+        /* ---------- AI Assistant ---------- */
+        .ai-assistant {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-300));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        .ai-assistant:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(67, 160, 71, 0.5);
+        }
+        .ai-assistant i {
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .ai-assistant:hover i {
+            transform: scale(1.2);
+        }
+        .ai-chatbox {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            z-index: 998;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .ai-chatbox.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        .chat-header {
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-300));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+        }
+        .bot-message {
+            background: #e8f5e9;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        .user-message {
+            background: var(--primary-500);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        .chat-input button {
+            background: var(--primary-500);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .chat-input button:hover {
+            background: var(--primary-600);
+            transform: scale(1.05);
+        }
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .faq-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-answer {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width:992px){
+            .hero h2{font-size:2.4rem}
+            nav ul{display:none}
+            .hamburger{display:block}
+            .map-container{min-height:300px}
+            .ai-chatbox {
+                width: 300px;
+                right: 10px;
+            }
+        }
+        @media (max-width:720px){
+            .hero{padding:100px 5% 60px}
+            .hero h2{font-size:1.9rem}
+            .section{padding:48px 5%}
+            .ai-chatbox {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                height: 400px;
+            }
+        }
+        @media (max-width:420px){
+            .logo h1{font-size:18px}
+            .hero h2{font-size:1.6rem}
+            .card{padding:14px}
+            .mobile-menu{width:88%}
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading -->
+    <div id="loading-screen" role="status" aria-live="polite">
+        <div class="loader"><i class="fas fa-eye eye-icon" aria-hidden="true"></i></div>
+        <div class="loading-text">AUROBINDO NETRALAYA</div>
+    </div>
+
+    <!-- Three.js Background -->
+    <div id="three-container" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+                <h1>Aurobindo Netralaya</h1>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#departments">Departments</a></li>
+                    <li><a href="#technologies">Technologies</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+
+            <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Overlay + Menu -->
+    <div class="mobile-overlay" id="mobile-overlay" tabindex="-1" aria-hidden="true"></div>
+    <aside class="mobile-menu" id="mobile-menu" aria-hidden="true">
+        <button class="close-menu" id="close-menu" aria-label="Close menu">
+            <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+        <ul>
+            <li><a href="#home" class="mobile-link">Home</a></li>
+            <li><a href="#about" class="mobile-link">About</a></li>
+            <li><a href="#services" class="mobile-link">Services</a></li>
+            <li><a href="#departments" class="mobile-link">Departments</a></li>
+            <li><a href="#technologies" class="mobile-link">Technologies</a></li>
+            <li><a href="#testimonials" class="mobile-link">Testimonials</a></li>
+            <li><a href="#contact" class="mobile-link">Contact</a></li>
+        </ul>
+    </aside>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h2>Vision Care Excellence</h2>
+            <p>Aurobindo Netralaya provides world-class eye care services with state-of-the-art technology and experienced specialists. Our commitment is to deliver the highest quality eye care with compassion and innovation.</p>
+            <button class="btn btn-primary">Book an Appointment</button>
+        </div>
+    </section>
+
+    <!-- Departments / Treatments -->
+    <section class="section" id="departments">
+        <div class="section-title">
+            <h2>Our Specialized Departments & Treatments</h2>
+            <p>Comprehensive eye care services for all vision needs — surgical, medical and rehabilitation.</p>
+        </div>
+        <div class="cards-container">
+            <div class="card department-card">
+                <i class="fas fa-sun"></i>
+                <h3>Cataract Surgery</h3>
+                <p>Advanced phacoemulsification with premium intraocular lenses including toric and multifocal options.</p>
+            </div>
+            <div class="card department-card">
+                <i class="fas fa-tint"></i>
+                <h3>Retina & Vitreous</h3>
+                <p>Management of diabetic retinopathy, macular diseases, retinal detachments and intravitreal therapies.</p>
+            </div>
+            <div class="card department-card">
+                <i class="fas fa-laser"></i>
+                <h3>Cornea & Anterior Segment</h3>
+                <p>Corneal transplants, DSEK/DMEK, keratoconus care and corneal cross-linking for stabilizing ectatic disease.</p>
+            </div>
+            <div class="card department-card">
+                <i class="fas fa-user-md"></i>
+                <h3>Pediatric Ophthalmology</h3>
+                <p>Child-friendly evaluations, squint surgery, amblyopia therapy and pediatric retina care.</p>
+            </div>
+            <div class="card department-card">
+                <i class="fas fa-eye"></i>
+                <h3>Glaucoma Clinic</h3>
+                <p>Early detection with OCT/visual fields and medical, laser or surgical glaucoma management.</p>
+            </div>
+            <div class="card department-card">
+                <i class="fas fa-microscope"></i>
+                <h3>Ocular Oncology & Neuro-Ophthalmology</h3>
+                <p>Diagnosis and multidisciplinary care for ocular tumors and vision-related neurological conditions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technologies -->
+    <section class="section" id="technologies">
+        <div class="section-title">
+            <h2>Advanced Eye Care Technologies</h2>
+            <p>We utilize the latest diagnostics and treatment platforms to provide precise and personalized care.</p>
+        </div>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <i class="fas fa-camera"></i>
+                <div>
+                    <h4>Optical Coherence Tomography (OCT)</h4>
+                    <p>High-resolution cross-sectional retinal imaging for macular and optic nerve assessment.</p>
+                </div>
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-wave-square"></i>
+                <div>
+                    <h4>Wavefront & Topography</h4>
+                    <p>Customized corneal and refractive mapping for premium vision correction plans.</p>
+                </div>
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-laser"></i>
+                <div>
+                    <h4>Femtosecond & Excimer Lasers</h4>
+                    <p>Precision refractive surgeries (LASIK/SMILE) and laser-assisted steps in cataract care.</p>
+                </div>
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-stethoscope"></i>
+                <div>
+                    <h4>Phaco & Micro-Incision Surgery</h4>
+                    <p>Modern cataract platforms for rapid recovery and safer outcomes.</p>
+                </div>
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-camera-retro"></i>
+                <div>
+                    <h4>Diagnostic Fundus Cameras</h4>
+                    <p>Widefield and digital fundus imaging for comprehensive retinal documentation.</p>
+                </div>
+            </div>
+            <div class="tech-item">
+                <i class="fas fa-low-vision"></i>
+                <div>
+                    <h4>Low-Vision & Vision Rehabilitation</h4>
+                    <p>Adaptive devices and therapy to maximize remaining vision for daily living.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section" id="testimonials">
+        <div class="section-title">
+            <h2>Patient Testimonials</h2>
+            <p>What our patients say about their experience</p>
+        </div>
+        <div class="cards-container">
+            <div class="card testimonial-card">
+                <p class="testimonial-text">I had cataract surgery at Aurobindo Netralaya and the experience was wonderful. The doctors were skilled and the staff was very caring. My vision is now perfect after the surgery.</p>
+                <div class="testimonial-author">
+                    <div class="avatar">RK</div>
+                    <div>
+                        <h4>Rajesh Kumar</h4>
+                        <p style="color:var(--muted);margin-top:4px">Cataract Patient</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card testimonial-card">
+                <p class="testimonial-text">My daughter's squint was completely corrected by the pediatric ophthalmology team. I'm grateful for their expertise and compassion throughout the treatment process.</p>
+                <div class="testimonial-author">
+                    <div class="avatar">PS</div>
+                    <div>
+                        <h4>Priya Singh</h4>
+                        <p style="color:var(--muted);margin-top:4px">Parent of Patient</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card testimonial-card">
+                <p class="testimonial-text">The LASIK procedure was quick and painless. Now I have perfect vision without glasses. Thank you Aurobindo Netralaya for giving me freedom from glasses!</p>
+                <div class="testimonial-author">
+                    <div class="avatar">AV</div>
+                    <div>
+                        <h4>Ankit Verma</h4>
+                        <p style="color:var(--muted);margin-top:4px">LASIK Patient</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card testimonial-card">
+                <p class="testimonial-text">I was diagnosed with diabetic retinopathy and received timely treatment. The retina specialists are excellent and the facilities are world-class. Highly recommended.</p>
+                <div class="testimonial-author">
+                    <div class="avatar">SM</div>
+                    <div>
+                        <h4>Suresh Menon</h4>
+                        <p style="color:var(--muted);margin-top:4px">Retina Patient</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section" id="contact">
+        <div class="section-title">
+            <h2>Contact Us</h2>
+            <p>Reach out to us for appointments, consultations or any queries</p>
+        </div>
+        <div class="contact-section">
+            <div class="card">
+                <h3>Get in Touch</h3>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Your Name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Your Email">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" placeholder="Your Phone">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" placeholder="Your Message"></textarea>
+                </div>
+                <button class="btn btn-primary">Send Message</button>
+            </div>
+            <div class="card">
+                <h3>Our Location</h3>
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m26!1m12!1m3!1d195965.1675971898!2d81.53578155412454!3d21.158064059226707!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m11!3e6!4m3!3m2!1d21.0506028!2d81.7400203!4m5!1s0x3a28dcfbf4b848f9%3A0x2af7e2b325523b70!2s6M83%2B3M%20Aurobindo%20Nethralaya%20(A%20Unit%20of%20SAMRC)%20%7C%20Eye%20Hospital%20%7C%20Eye%20Specialist%20%7C%20Ophthalmologists%20%7C%20Lasik%20Laser%20Vision%2C%20Aurobindo%20Enclave%2C%20near%20Ram%20Krishna%20CARE%20Hospital%2C%20Pachpedi%20Naka%2C%20Raipur%2C%20Chhattisgarh%20492001!3m2!1d21.2147246!2d81.65417149999999!5e1!3m2!1sen!2sin!4v1757229476563!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div style="margin-top:20px">
+                    <p><i class="fas fa-map-marker-alt" style="color:var(--primary-600);margin-right:8px"></i> Aurobindo Enclave, near Ram Krishna CARE Hospital, Pachpedi Naka, Raipur, Chhattisgarh 492001</p>
+                    <p><i class="fas fa-phone" style="color:var(--primary-600);margin-right:8px"></i> +91 80 1234 5678</p>
+                    <p><i class="fas fa-envelope" style="color:var(--primary-600);margin-right:8px"></i> info@aurobindonetralaya.com</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Aurobindo Netralaya</h3>
+                <p>Providing comprehensive eye care with cutting-edge technology and compassionate service.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#about"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#services"><i class="fas fa-cogs"></i> Services</a></li>
+                    <li><a href="#departments"><i class="fas fa-building"></i> Departments</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Our Services</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-sun"></i> Cataract Surgery</a></li>
+                    <li><a href="#"><i class="fas fa-tint"></i> Retina Care</a></li>
+                    <li><a href="#"><i class="fas fa-laser"></i> LASIK & Refractive</a></li>
+                    <li><a href="#"><i class="fas fa-user-md"></i> Pediatric Ophthalmology</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Emergency Contact</h3>
+                <p>For eye emergencies outside regular hours, please call:</p>
+                <p><i class="fas fa-phone-alt"></i> +91 98765 43210</p>
+                <p>Available 24/7 for urgent eye care needs.</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 SFY Technologies Co. Pvt. Ltd. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- AI Assistant -->
+    <div class="ai-assistant" id="aiAssistant" aria-label="AI Assistant">
+        <i class="fas fa-robot"></i>
+    </div>
+    <div class="ai-chatbox" id="aiChatbox">
+        <div class="chat-header">
+            <h4>AI Assistant</h4>
+            <button id="closeChat" aria-label="Close chat"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">Hello! I'm your AI assistant. How can I help you today?</div>
+            <div class="faq-item">
+                <div class="faq-question">What are your operating hours? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-answer">We are open Monday to Saturday from 9:00 AM to 6:00 PM. Emergency services are available 24/7.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Do I need an appointment? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-answer">While walk-ins are welcome, we recommend scheduling an appointment to minimize waiting time.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">What insurance do you accept? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-answer">We accept most major insurance providers. Please contact our billing department for specific information.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How long does cataract surgery take? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-answer">The procedure itself typically takes about 15-20 minutes, but you should plan to be at the facility for 2-3 hours.</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button id="sendMessage" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Three.js for background
+            initParticleBackground();
+            
+            // Initialize mobile menu functionality
+            initMobileMenu();
+            
+            // Initialize AI assistant functionality
+            initAIAssistant();
+            
+            // Initialize FAQ functionality
+            initFAQ();
+            
+            // Hide loading screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 450);
+            }, 1500);
+        });
+
+        function initMobileMenu() {
+            // Mobile menu toggle
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            const closeMenu = document.getElementById('close-menu');
+            
+            hamburger.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+                mobileOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('active');
+                mobileOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            closeMenu.addEventListener('click', closeMobileMenu);
+            mobileOverlay.addEventListener('click', closeMobileMenu);
+            
+            // Mobile menu links
+            document.querySelectorAll('.mobile-link').forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+        }
+
+        function initAIAssistant() {
+            // AI Assistant toggle
+            const aiAssistant = document.getElementById('aiAssistant');
+            const aiChatbox = document.getElementById('aiChatbox');
+            const closeChat = document.getElementById('closeChat');
+            
+            aiAssistant.addEventListener('click', () => {
+                aiChatbox.classList.toggle('open');
+            });
+            
+            closeChat.addEventListener('click', () => {
+                aiChatbox.classList.remove('open');
+            });
+        }
+
+        function initFAQ() {
+            // FAQ toggle functionality
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    const icon = question.querySelector('i');
+                    
+                    answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+            });
+        }
+
+        function initParticleBackground() {
+            // Setup Three.js scene
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                alpha: true, 
+                antialias: true 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+            
+            // Create circular particles with a gentle, flowing motion
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 4000;
+            
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
+            const sizeArray = new Float32Array(particlesCount);
+            
+            // Initialize particle positions, colors and sizes
+            for(let i = 0; i < particlesCount * 3; i += 3) {
+                // Position particles in a large cube
+                posArray[i] = (Math.random() - 0.5) * 100;
+                posArray[i + 1] = (Math.random() - 0.5) * 100;
+                posArray[i + 2] = (Math.random() - 0.5) * 100;
+                
+                // Soft green/blue color palette suitable for eye care
+                colorArray[i] = Math.random() * 0.2 + 0.6;     // R: 0.6-0.8
+                colorArray[i + 1] = Math.random() * 0.4 + 0.6; // G: 0.6-1.0
+                colorArray[i + 2] = Math.random() * 0.2 + 0.8; // B: 0.8-1.0
+                
+                // Smaller sizes for micro particles
+                sizeArray[i/3] = Math.random() * 0.3 + 0.1;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizeArray, 1));
+            
+            // Create circular particle material with soft glow
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 1.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
+            });
+            
+            // Create points system
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            // Create subtle laser/light rays that resemble eye laser treatments
+            const createLightRay = (color, x, y, z) => {
+                const geometry = new THREE.BufferGeometry();
+                const vertices = new Float32Array(6);
+                
+                // Start point
+                vertices[0] = x;
+                vertices[1] = y;
+                vertices[2] = z;
+                
+                // End point (slightly randomized)
+                vertices[3] = x + (Math.random() - 0.5) * 40;
+                vertices[4] = y + (Math.random() - 0.5) * 40;
+                vertices[5] = z + (Math.random() - 0.5) * 40;
+                
+                geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                
+                const material = new THREE.LineBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.15,
+                    linewidth: 1
+                });
+                
+                const line = new THREE.Line(geometry, material);
+                scene.add(line);
+                return line;
+            };
+            
+            // Create multiple gentle light rays
+            const lightRays = [];
+            for (let i = 0; i < 20; i++) {
+                const color = new THREE.Color(
+                    Math.random() * 0.3 + 0.7, // More green
+                    Math.random() * 0.4 + 0.6,
+                    Math.random() * 0.2 + 0.8  // More blue
+                );
+                const ray = createLightRay(
+                    color,
+                    (Math.random() - 0.5) * 40,
+                    (Math.random() - 0.5) * 40,
+                    (Math.random() - 0.5) * 40
+                );
+                lightRays.push(ray);
+            }
+            
+            // Camera position
+            camera.position.z = 30;
+            
+            // Mouse position for interaction
+            const mouse = {
+                x: 0,
+                y: 0
+            };
+            
+            // Handle mouse movement - particles follow cursor
+            document.addEventListener('mousemove', (event) => {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+            
+            // Animation
+            const clock = new THREE.Clock();
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                const elapsedTime = clock.getElapsedTime();
+                
+                // Update particles with slow, smooth movement
+                const positions = particlesGeometry.attributes.position.array;
+                const colors = particlesGeometry.attributes.color.array;
+                const sizes = particlesGeometry.attributes.size.array;
+                
+                for(let i = 0; i < particlesCount * 3; i += 3) {
+                    const i3 = i / 3;
+                    
+                    // Create gentle wave-like motion
+                    positions[i + 1] += Math.sin(elapsedTime * 0.3 + positions[i] * 0.1) * 0.02;
+                    
+                    // Particles follow cursor instead of returning to origin
+                    positions[i] += mouse.x * 0.05;
+                    positions[i + 1] += mouse.y * 0.05;
+                    
+                    // Very subtle color changes
+                    colors[i] = 0.6 + Math.sin(elapsedTime * 0.2 + i3) * 0.1;
+                    colors[i + 1] = 0.7 + Math.cos(elapsedTime * 0.3 + i3) * 0.1;
+                    colors[i + 2] = 0.8 + Math.sin(elapsedTime * 0.4 + i3) * 0.1;
+                    
+                    // Gentle pulsing size
+                    sizes[i3] = 0.1 + Math.sin(elapsedTime * 0.5 + i3) * 0.1;
+                }
+                
+                particlesGeometry.attributes.position.needsUpdate = true;
+                particlesGeometry.attributes.color.needsUpdate = true;
+                particlesGeometry.attributes.size.needsUpdate = true;
+                
+                // Rotate particles very slowly
+                particlesMesh.rotation.x = elapsedTime * 0.03;
+                particlesMesh.rotation.y = elapsedTime * 0.02;
+                
+                // Update light rays
+                lightRays.forEach((ray, index) => {
+                    const positions = ray.geometry.attributes.position.array;
+                    
+                    // Slight movement of end points
+                    positions[3] += (Math.random() - 0.5) * 0.05;
+                    positions[4] += (Math.random() - 0.5) * 0.05;
+                    positions[5] += (Math.random() - 0.5) * 0.05;
+                    
+                    ray.geometry.attributes.position.needsUpdate = true;
+                    
+                    // Fade in and out gently
+                    ray.material.opacity = 0.1 + Math.sin(elapsedTime * 0.3 + index) * 0.08;
+                });
+                
+                // Move camera very slightly
+                camera.position.x = Math.sin(elapsedTime * 0.08) * 1.5;
+                camera.position.y = Math.cos(elapsedTime * 0.08) * 1.5;
+                camera.lookAt(scene.position);
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+    </script>
+</body>
+</html>
